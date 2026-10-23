@@ -1,4 +1,4 @@
-package net.xlea99.packsmith.dump;
+package net.xlea99.packdump.dump;
 
 import com.google.gson.JsonArray;
 import com.mojang.logging.LogUtils;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Single entry point for running all Packsmith dumps.
+ * Single entry point for running every dump.
  * Checks for world-specific datapacks before proceeding, and runs the registry,
  * localization and block-item dumps together.
  */
@@ -39,14 +39,14 @@ public final class DumpOrchestrator {
         // ── Safety check: world-specific datapacks ──
         List<String> worldPacks = WorldDatapackDetector.findWorldSpecificDatapacks(server);
         if (!worldPacks.isEmpty()) {
-            LOGGER.warn("Packsmith dump ABORTED: world-specific datapacks detected: {}", worldPacks);
+            LOGGER.warn("packdump dump ABORTED: world-specific datapacks detected: {}", worldPacks);
 
-            messages.add(Component.literal("[Packsmith] ")
+            messages.add(Component.literal("[packdump] ")
                     .withStyle(ChatFormatting.RED, ChatFormatting.BOLD)
                     .append(Component.literal("DUMP ABORTED: world-specific datapacks detected!")
                             .withStyle(ChatFormatting.RED)));
 
-            messages.add(Component.literal("[Packsmith] ")
+            messages.add(Component.literal("[packdump] ")
                     .withStyle(ChatFormatting.RED)
                     .append(Component.literal("The following datapacks are loaded from this world's save folder:")
                             .withStyle(ChatFormatting.RED)));
@@ -56,7 +56,7 @@ public final class DumpOrchestrator {
                         .withStyle(ChatFormatting.RED));
             }
 
-            messages.add(Component.literal("[Packsmith] ")
+            messages.add(Component.literal("[packdump] ")
                     .withStyle(ChatFormatting.RED)
                     .append(Component.literal("Remove these datapacks and reload to get a clean dump.")
                             .withStyle(ChatFormatting.YELLOW)));
@@ -69,8 +69,8 @@ public final class DumpOrchestrator {
         try {
             registryManifest = StaticRegistryDumpService.dumpAllRegistries(server.registryAccess());
         } catch (Exception e) {
-            LOGGER.error("Packsmith registry dump failed", e);
-            messages.add(Component.literal("[Packsmith] Registry dump FAILED: " + e.getMessage())
+            LOGGER.error("packdump registry dump failed", e);
+            messages.add(Component.literal("[packdump] Registry dump FAILED: " + e.getMessage())
                     .withStyle(ChatFormatting.RED));
             return new DumpResult(false, messages);
         }
@@ -79,8 +79,8 @@ public final class DumpOrchestrator {
         try {
             MetaDumpService.dumpMeta(registryManifest);
         } catch (Exception e) {
-            LOGGER.error("Packsmith meta dump failed", e);
-            messages.add(Component.literal("[Packsmith] Meta dump FAILED: " + e.getMessage())
+            LOGGER.error("packdump meta dump failed", e);
+            messages.add(Component.literal("[packdump] Meta dump FAILED: " + e.getMessage())
                     .withStyle(ChatFormatting.RED));
             return new DumpResult(false, messages);
         }
@@ -89,8 +89,8 @@ public final class DumpOrchestrator {
         try {
             LocalizationDumpService.dumpLocalizations();
         } catch (Exception e) {
-            LOGGER.error("Packsmith localization dump failed", e);
-            messages.add(Component.literal("[Packsmith] Localization dump FAILED: " + e.getMessage())
+            LOGGER.error("packdump localization dump failed", e);
+            messages.add(Component.literal("[packdump] Localization dump FAILED: " + e.getMessage())
                     .withStyle(ChatFormatting.RED));
             return new DumpResult(false, messages);
         }
@@ -102,8 +102,8 @@ public final class DumpOrchestrator {
         try {
             BlockItemDumpService.dumpBlockItems();
         } catch (Exception e) {
-            LOGGER.error("Packsmith block item dump failed", e);
-            messages.add(Component.literal("[Packsmith] Block item dump FAILED: " + e.getMessage())
+            LOGGER.error("packdump block item dump failed", e);
+            messages.add(Component.literal("[packdump] Block item dump FAILED: " + e.getMessage())
                     .withStyle(ChatFormatting.RED));
             return new DumpResult(false, messages);
         }
@@ -115,14 +115,14 @@ public final class DumpOrchestrator {
         try {
             TextureDumpService.dumpTextures();
         } catch (Exception e) {
-            LOGGER.error("Packsmith texture dump failed", e);
-            messages.add(Component.literal("[Packsmith] Texture dump FAILED: " + e.getMessage())
+            LOGGER.error("packdump texture dump failed", e);
+            messages.add(Component.literal("[packdump] Texture dump FAILED: " + e.getMessage())
                     .withStyle(ChatFormatting.RED));
             return new DumpResult(false, messages);
         }
 
         // ── Success ──
-        messages.add(Component.literal("[Packsmith] ")
+        messages.add(Component.literal("[packdump] ")
                 .withStyle(ChatFormatting.GREEN)
                 .append(Component.literal("Dump complete (meta + registries + localization + block items + textures).")
                         .withStyle(ChatFormatting.GREEN)));

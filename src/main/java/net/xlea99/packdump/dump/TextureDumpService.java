@@ -1,4 +1,4 @@
-package net.xlea99.packsmith.dump;
+package net.xlea99.packdump.dump;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -7,8 +7,8 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.xlea99.packsmith.PacksmithConfig;
-import net.xlea99.packsmith.PacksmithPaths;
+import net.xlea99.packdump.PackdumpConfig;
+import net.xlea99.packdump.PackdumpPaths;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -66,10 +66,10 @@ public final class TextureDumpService {
      */
     public static void dumpTextures() {
         if (FMLEnvironment.dist != Dist.CLIENT) {
-            LOGGER.info("Packsmith texture dump skipped: no client, textures do not exist here");
+            LOGGER.info("packdump texture dump skipped: no client, textures do not exist here");
             return;
         }
-        LOGGER.info("Packsmith dumping block textures...");
+        LOGGER.info("packdump dumping block textures...");
 
         // Reached only behind the dist check and only through this call, so a dedicated
         // server never loads the class and never resolves `Minecraft` at all. Verifying a
@@ -96,18 +96,18 @@ public final class TextureDumpService {
         root.add("requested", requestedByRegistry);
 
         try {
-            Path outDir = PacksmithPaths.attributesDir();
+            Path outDir = PackdumpPaths.attributesDir();
             Files.createDirectories(outDir);
             Path outFile = outDir.resolve("textures.json");
 
-            if (!PacksmithConfig.overwriteExisting && Files.exists(outFile)) {
+            if (!PackdumpConfig.overwriteExisting && Files.exists(outFile)) {
                 outFile = outDir.resolve("textures_" + System.currentTimeMillis() + ".json");
             }
             Files.writeString(outFile, GSON.toJson(root), StandardCharsets.UTF_8);
-            LOGGER.info("Packsmith texture dump wrote {} ({} blocks, {} with a requested name)",
+            LOGGER.info("packdump texture dump wrote {} ({} blocks, {} with a requested name)",
                     outFile.toAbsolutePath(), resolved.size(), requested.size());
         } catch (IOException e) {
-            LOGGER.error("Packsmith texture dump failed", e);
+            LOGGER.error("packdump texture dump failed", e);
         }
     }
 
@@ -161,7 +161,7 @@ public final class TextureDumpService {
                             // One misbehaving mod's model must not cost the other 13,000
                             // blocks their textures. Absent means "could not be answered",
                             // which is what happened.
-                            LOGGER.warn("Packsmith could not resolve a texture for {}: {}",
+                            LOGGER.warn("packdump could not resolve a texture for {}: {}",
                                     id, e.toString());
                         }
                         try {
@@ -170,7 +170,7 @@ public final class TextureDumpService {
                                 requested.addProperty(id.toString(), asked.toString());
                             }
                         } catch (Exception e) {
-                            LOGGER.warn("Packsmith could not read the requested texture for {}: {}",
+                            LOGGER.warn("packdump could not read the requested texture for {}: {}",
                                     id, e.toString());
                         }
                     });

@@ -1,4 +1,4 @@
-package net.xlea99.packsmith;
+package net.xlea99.packdump;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.ChatFormatting;
@@ -11,20 +11,20 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.xlea99.packsmith.commands.PacksmithCommands;
-import net.xlea99.packsmith.dump.DumpOrchestrator;
+import net.xlea99.packdump.commands.PackdumpCommands;
+import net.xlea99.packdump.dump.DumpOrchestrator;
 import org.slf4j.Logger;
 
-@Mod(Packsmith.MODID)
-public class Packsmith {
+@Mod(Packdump.MODID)
+public class Packdump {
 
-    public static final String MODID = "packsmith";
+    public static final String MODID = "packdump";
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public Packsmith() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PacksmithConfig.SPEC);
+    public Packdump() {
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PackdumpConfig.SPEC);
         MinecraftForge.EVENT_BUS.register(this);
-        LOGGER.info("Packsmith loaded");
+        LOGGER.info("packdump loaded");
     }
 
     @SubscribeEvent
@@ -43,15 +43,15 @@ public class Packsmith {
         // they'll see the dump files exist when they check.
         if (server.getPlayerList().getPlayers().isEmpty()) {
             if (result.success()) {
-                LOGGER.info("Packsmith dump completed successfully on world load.");
+                LOGGER.info("packdump dump completed successfully on world load.");
             } else {
-                LOGGER.warn("Packsmith dump BLOCKED on world load. See log for details.");
+                LOGGER.warn("packdump dump BLOCKED on world load. See log for details.");
             }
         }
     }
 
     @SubscribeEvent
     public void onRegisterCommands(RegisterCommandsEvent event) {
-        PacksmithCommands.register(event);
+        PackdumpCommands.register(event);
     }
 }

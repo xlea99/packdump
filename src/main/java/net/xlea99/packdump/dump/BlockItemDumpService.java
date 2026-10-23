@@ -1,4 +1,4 @@
-package net.xlea99.packsmith.dump;
+package net.xlea99.packdump.dump;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,8 +19,8 @@ import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.WallBlock;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.xlea99.packsmith.PacksmithConfig;
-import net.xlea99.packsmith.PacksmithPaths;
+import net.xlea99.packdump.PackdumpConfig;
+import net.xlea99.packdump.PackdumpPaths;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -69,7 +69,7 @@ public final class BlockItemDumpService {
      * difference, so a second map of nulls would carry no information and 5,738 more entries.
      */
     public static void dumpBlockItems() {
-        LOGGER.info("Packsmith dumping block items...");
+        LOGGER.info("packdump dumping block items...");
 
         JsonObject places = new JsonObject();
         JsonObject itemForms = new JsonObject();
@@ -125,18 +125,18 @@ public final class BlockItemDumpService {
         root.add("classes", classes);
 
         try {
-            Path outDir = PacksmithPaths.attributesDir();
+            Path outDir = PackdumpPaths.attributesDir();
             Files.createDirectories(outDir);
             Path outFile = outDir.resolve("block_items.json");
 
-            if (!PacksmithConfig.overwriteExisting && Files.exists(outFile)) {
+            if (!PackdumpConfig.overwriteExisting && Files.exists(outFile)) {
                 outFile = outDir.resolve("block_items_" + System.currentTimeMillis() + ".json");
             }
             Files.writeString(outFile, GSON.toJson(root), StandardCharsets.UTF_8);
-            LOGGER.info("Packsmith block item dump wrote {} ({} block items, {} blocks)",
+            LOGGER.info("packdump block item dump wrote {} ({} block items, {} blocks)",
                     outFile.toAbsolutePath(), places.size(), blockForms.size());
         } catch (IOException e) {
-            LOGGER.error("Packsmith block item dump failed", e);
+            LOGGER.error("packdump block item dump failed", e);
         }
     }
 

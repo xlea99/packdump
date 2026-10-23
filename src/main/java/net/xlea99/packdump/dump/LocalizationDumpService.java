@@ -1,4 +1,4 @@
-package net.xlea99.packsmith.dump;
+package net.xlea99.packdump.dump;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -12,8 +12,8 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.xlea99.packsmith.PacksmithConfig;
-import net.xlea99.packsmith.PacksmithPaths;
+import net.xlea99.packdump.PackdumpConfig;
+import net.xlea99.packdump.PackdumpPaths;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -53,7 +53,7 @@ public final class LocalizationDumpService {
      * attributes/localization.json file.
      */
     public static void dumpLocalizations() {
-        LOGGER.info("Packsmith dumping localizations...");
+        LOGGER.info("packdump dumping localizations...");
         Language lang = Language.getInstance();
 
         JsonObject values = new JsonObject();
@@ -85,17 +85,17 @@ public final class LocalizationDumpService {
         root.add("keys", keys);
 
         try {
-            Path outDir = PacksmithPaths.attributesDir();
+            Path outDir = PackdumpPaths.attributesDir();
             Files.createDirectories(outDir);
             Path outFile = outDir.resolve("localization.json");
 
-            if (!PacksmithConfig.overwriteExisting && Files.exists(outFile)) {
+            if (!PackdumpConfig.overwriteExisting && Files.exists(outFile)) {
                 outFile = outDir.resolve("localization_" + System.currentTimeMillis() + ".json");
             }
             Files.writeString(outFile, GSON.toJson(root), StandardCharsets.UTF_8);
-            LOGGER.info("Packsmith localization dump wrote {}", outFile.toAbsolutePath());
+            LOGGER.info("packdump localization dump wrote {}", outFile.toAbsolutePath());
         } catch (IOException e) {
-            LOGGER.error("Packsmith localization dump failed", e);
+            LOGGER.error("packdump localization dump failed", e);
         }
     }
 

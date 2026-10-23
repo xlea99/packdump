@@ -1,4 +1,4 @@
-package net.xlea99.packsmith.dump;
+package net.xlea99.packdump.dump;
 
 /**
  * The version stamped on every file a dump writes.
@@ -8,7 +8,7 @@ package net.xlea99.packsmith.dump;
  * remember and two chances to forget. A dump whose files disagree about their own version is
  * worse than one that is simply old — the reader has no way to tell which file is lying.
  *
- * <p><b>Bump this whenever the shape of any dumped file changes.</b> Packsmith reads older
+ * <p><b>Bump this whenever the shape of any dumped file changes.</b> PackSmith reads older
  * versions forever: a snapshot on disk is an archive, not a cache, and you cannot go back
  * and re-dump a pack as it was six months ago. Additive changes are therefore the strongly
  * preferred kind — a new block beside the old one, so an older reader ignores it and a newer

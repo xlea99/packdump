@@ -1,4 +1,4 @@
-package net.xlea99.packsmith.dump;
+package net.xlea99.packdump.dump;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.MinecraftServer;
@@ -45,7 +45,7 @@ public final class WorldDatapackDetector {
         }
 
         if (!worldPacks.isEmpty()) {
-            LOGGER.warn("Packsmith detected {} world-specific datapack(s): {}",
+            LOGGER.warn("packdump detected {} world-specific datapack(s): {}",
                     worldPacks.size(), worldPacks);
         }
         return worldPacks;

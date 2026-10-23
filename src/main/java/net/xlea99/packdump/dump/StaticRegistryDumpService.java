@@ -1,11 +1,11 @@
-package net.xlea99.packsmith.dump;
+package net.xlea99.packdump.dump;
 
 import com.google.gson.*;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
-import net.xlea99.packsmith.PacksmithConfig;
-import net.xlea99.packsmith.PacksmithPaths;
+import net.xlea99.packdump.PackdumpConfig;
+import net.xlea99.packdump.PackdumpPaths;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -26,7 +26,7 @@ public final class StaticRegistryDumpService {
      * array (registry name, file, count) for inclusion in meta.json.
      */
     public static JsonArray dumpAllRegistries(RegistryAccess registryAccess) throws IOException {
-        Path out_dir = PacksmithPaths.registriesDir();
+        Path out_dir = PackdumpPaths.registriesDir();
         Files.createDirectories(out_dir);
 
         JsonArray registryManifest = new JsonArray();
@@ -69,10 +69,10 @@ public final class StaticRegistryDumpService {
         root.add("values", values);
 
         Path out = dir_path.resolve(filename + ".json");
-        if (!PacksmithConfig.overwriteExisting && Files.exists(out)) {
+        if (!PackdumpConfig.overwriteExisting && Files.exists(out)) {
             out = dir_path.resolve(filename + "_" + System.currentTimeMillis() + ".json");
         }
         Files.writeString(out, GSON.toJson(root), StandardCharsets.UTF_8);
-        LOGGER.info("Packsmith registry dump wrote {}", out.toAbsolutePath());
+        LOGGER.info("packdump registry dump wrote {}", out.toAbsolutePath());
     }
 }
