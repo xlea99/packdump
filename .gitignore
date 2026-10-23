@@ -1,0 +1,23 @@
+run/
+run-data/
+logs/
+.gradle/
+build/
+out/
+classes/
+
+# IDE crap
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+bin/
+
+workspace
+
+__pycache__/
+*.pyc
