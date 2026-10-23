@@ -6,9 +6,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import net.minecraft.SharedConstants;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.forgespi.language.IModInfo;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforgespi.language.IModInfo;
 import net.xlea99.packdump.PackdumpPaths;
 import org.slf4j.Logger;
 
@@ -43,8 +43,8 @@ public final class MetaDumpService {
 
         // Game and loader versions
         root.addProperty("minecraft_version", SharedConstants.getCurrentVersion().getName());
-        root.addProperty("loader", "forge");
-        root.addProperty("loader_version", FMLLoader.versionInfo().forgeVersion());
+        root.addProperty("loader", "neoforge");
+        root.addProperty("loader_version", FMLLoader.versionInfo().neoForgeVersion());
 
         // Loaded mods
         JsonArray mods = new JsonArray();

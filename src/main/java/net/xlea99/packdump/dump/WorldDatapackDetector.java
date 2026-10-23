@@ -12,9 +12,9 @@ import java.util.List;
 /**
  * Detects world-specific datapacks that could contaminate a dump.
  *
- * In Minecraft 1.20.1, enabled packs have IDs like:
+ * In Minecraft 1.21.1 on NeoForge, enabled packs have IDs like:
  *   - "vanilla"                     -> base game, always present
- *   - "mod:modid"                   -> mod-provided datapacks (Forge)
+ *   - "mod/modid"                   -> mod-provided datapacks (NeoForge)
  *   - "file/packname"               -> datapacks from the world's datapacks/ folder
  *   - "file/packname.zip"           -> zipped datapacks from the world's datapacks/ folder
  *

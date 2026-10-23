@@ -2,7 +2,7 @@ package net.xlea99.packdump.commands;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.xlea99.packdump.dump.DumpOrchestrator;
 

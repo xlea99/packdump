@@ -1,24 +1,24 @@
 package net.xlea99.packdump;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.config.ModConfigEvent;
 
-@Mod.EventBusSubscriber(modid = Packdump.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Packdump.MODID)
 public final class PackdumpConfig {
 
-    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    private static final ForgeConfigSpec.ConfigValue<String> OUTPUT_DIR = BUILDER
+    private static final ModConfigSpec.ConfigValue<String> OUTPUT_DIR = BUILDER
             .comment("Directory (relative to the game directory) where packdump writes dumps.")
             .define("outputDir", "packdump");
 
-    private static final ForgeConfigSpec.BooleanValue OVERWRITE_EXISTING = BUILDER
+    private static final ModConfigSpec.BooleanValue OVERWRITE_EXISTING = BUILDER
             .comment("If true, overwrite existing dump files. If false, packdump may write timestamped files instead.")
             .define("overwriteExisting", true);
 
-    public static final ForgeConfigSpec SPEC = BUILDER.build();
+    public static final ModConfigSpec SPEC = BUILDER.build();
 
     // Cached values (read once on config load/reload)
     public static String outputDir;

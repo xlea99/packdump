@@ -1,16 +1,15 @@
 package net.xlea99.packdump;
 
 import com.mojang.logging.LogUtils;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.server.ServerStartedEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.xlea99.packdump.commands.PackdumpCommands;
 import net.xlea99.packdump.dump.DumpOrchestrator;
 import org.slf4j.Logger;
@@ -21,9 +20,9 @@ public class Packdump {
     public static final String MODID = "packdump";
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public Packdump() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PackdumpConfig.SPEC);
-        MinecraftForge.EVENT_BUS.register(this);
+    public Packdump(ModContainer container) {
+        container.registerConfig(ModConfig.Type.COMMON, PackdumpConfig.SPEC);
+        NeoForge.EVENT_BUS.register(this);
         LOGGER.info("packdump loaded");
     }
 

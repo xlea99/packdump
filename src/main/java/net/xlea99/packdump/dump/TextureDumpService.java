@@ -5,8 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.xlea99.packdump.PackdumpConfig;
 import net.xlea99.packdump.PackdumpPaths;
 import org.slf4j.Logger;
@@ -125,7 +125,9 @@ public final class TextureDumpService {
      * {@code ModelBakery} after the reload that built it, and {@code ModelBakery.getModel}
      * serves from a cache that baking already ran {@code resolveParents} over — so nothing
      * here has to hook the bake, keep static state, or notice a resource reload. It reads
-     * what is sitting there, exactly like the baked half does.
+     * what is sitting there, exactly like the baked half does. Since 1.21 both
+     * {@code getModel} and the {@code topLevelModels} map are private; the access
+     * transformer in {@code META-INF/accesstransformer.cfg} opens them, and nothing else.
      */
     private static final class ClientTextures {
 
@@ -144,18 +146,18 @@ public final class TextureDumpService {
             var renderer = minecraft.getBlockRenderer();
             var bakery = minecraft.getModelManager().getModelBakery();
 
-            net.minecraftforge.registries.ForgeRegistries.BLOCKS.getEntries().stream()
+            net.minecraft.core.registries.BuiltInRegistries.BLOCK.entrySet().stream()
                     .sorted(java.util.Comparator.comparing(e -> e.getKey().location().toString()))
                     .forEach(entry -> {
                         ResourceLocation id = entry.getKey().location();
                         var state = entry.getValue().defaultBlockState();
                         try {
                             var model = renderer.getBlockModel(state);
-                            // The Forge overload, not the deprecated no-arg one. `ModelData.EMPTY`
+                            // The NeoForge overload, not the deprecated no-arg one. `ModelData.EMPTY`
                             // is what a block with no block entity resolves with anyway, and it is
                             // the only thing available outside a world.
                             var sprite = model.getParticleIcon(
-                                    net.minecraftforge.client.model.data.ModelData.EMPTY);
+                                    net.neoforged.neoforge.client.model.data.ModelData.EMPTY);
                             resolved.addProperty(id.toString(), sprite.contents().name().toString());
                         } catch (Exception e) {
                             // One misbehaving mod's model must not cost the other 13,000
@@ -190,7 +192,7 @@ public final class TextureDumpService {
                 net.minecraft.world.level.block.state.BlockState state) {
             var location = net.minecraft.client.renderer.block.BlockModelShaper
                     .stateToModelLocation(state);
-            var model = blockModelOf(bakery, bakery.getModel(location));
+            var model = blockModelOf(bakery, bakery.topLevelModels.get(location));
             return model == null ? null : model.getMaterial("particle").texture();
         }
 
@@ -210,7 +212,7 @@ public final class TextureDumpService {
          * answer is a function of the pack rather than of a hash bucket.
          *
          * <p><b>This is a best answer, not the answer.</b> Measured on a 300-mod pack, 211
-         * blocks of 13,841 render with a texture the unbaked model does not name — Forge
+         * blocks of 13,841 render with a texture the unbaked model does not name — custom
          * geometry loaders and CTM replace the baked model entirely, so the JSON underneath
          * has stopped describing what is drawn. That is why {@code texture} stays the
          * authority whenever it resolves, and this is consulted only when nothing renders,

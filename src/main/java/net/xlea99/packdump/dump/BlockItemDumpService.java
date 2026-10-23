@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.WallBlock;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.xlea99.packdump.PackdumpConfig;
 import net.xlea99.packdump.PackdumpPaths;
 import org.slf4j.Logger;
@@ -76,7 +76,7 @@ public final class BlockItemDumpService {
         JsonObject blockForms = new JsonObject();
         JsonObject blockClasses = new JsonObject();
 
-        ForgeRegistries.ITEMS.getEntries().stream()
+        BuiltInRegistries.ITEM.entrySet().stream()
                 .sorted(Comparator.comparing(e -> e.getKey().location().toString()))
                 .forEach(entry -> {
                     Item item = entry.getValue();
@@ -84,7 +84,7 @@ public final class BlockItemDumpService {
                         return;
                     }
                     Block block = blockItem.getBlock();
-                    ResourceLocation blockId = ForgeRegistries.BLOCKS.getKey(block);
+                    ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(block);
                     if (blockId == null) {
                         // A BlockItem for a block that is not registered. Nothing downstream
                         // could act on it, and a null here would read as "no block" rather
@@ -96,7 +96,7 @@ public final class BlockItemDumpService {
                     itemForms.addProperty(id, formOf(block));
                 });
 
-        ForgeRegistries.BLOCKS.getEntries().stream()
+        BuiltInRegistries.BLOCK.entrySet().stream()
                 .sorted(Comparator.comparing(e -> e.getKey().location().toString()))
                 .forEach(entry -> {
                     String id = entry.getKey().location().toString();

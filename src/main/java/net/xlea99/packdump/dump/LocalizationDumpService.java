@@ -4,14 +4,16 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.Gson;
 import com.mojang.logging.LogUtils;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.locale.Language;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
 import net.xlea99.packdump.PackdumpConfig;
 import net.xlea99.packdump.PackdumpPaths;
 import org.slf4j.Logger;
@@ -24,7 +26,7 @@ import java.util.Comparator;
 import java.util.function.Function;
 
 /**
- * Dumps the resolved display names for all entries in the static Forge registries.
+ * Dumps the resolved display names for the entries of the registries players see names for.
  * This must be called client-side, where Language.getInstance() returns the full
  * resource-pack-resolved translations (not just vanilla fallback keys).
  *
@@ -52,27 +54,33 @@ public final class LocalizationDumpService {
      * Dumps localization for all supported static registries into a single
      * attributes/localization.json file.
      */
-    public static void dumpLocalizations() {
+    public static void dumpLocalizations(RegistryAccess registryAccess) {
         LOGGER.info("packdump dumping localizations...");
         Language lang = Language.getInstance();
 
         JsonObject values = new JsonObject();
         JsonObject keys = new JsonObject();
 
-        collect("minecraft:item", ForgeRegistries.ITEMS, Item::getDescriptionId,
+        collect("minecraft:item", BuiltInRegistries.ITEM, Item::getDescriptionId,
                 lang, values, keys);
-        collect("minecraft:block", ForgeRegistries.BLOCKS, Block::getDescriptionId,
+        collect("minecraft:block", BuiltInRegistries.BLOCK, Block::getDescriptionId,
                 lang, values, keys);
-        collect("minecraft:entity_type", ForgeRegistries.ENTITY_TYPES,
+        collect("minecraft:entity_type", BuiltInRegistries.ENTITY_TYPE,
                 EntityType::getDescriptionId, lang, values, keys);
-        collect("minecraft:enchantment", ForgeRegistries.ENCHANTMENTS,
-                Enchantment::getDescriptionId, lang, values, keys);
-        collect("minecraft:mob_effect", ForgeRegistries.MOB_EFFECTS,
+        collect("minecraft:mob_effect", BuiltInRegistries.MOB_EFFECT,
                 MobEffect::getDescriptionId, lang, values, keys);
 
-        // NOTE: Biomes are a dynamic/data-driven registry in 1.20.1 and not in ForgeRegistries.
-        // Biome localization would need RegistryAccess (server-side, requires world load).
-        // We can add that later via a separate server-triggered dump path.
+        // Enchantments are datapack data since 1.21, so they live in the world's registries
+        // rather than the built-in ones, and carry a display Component instead of a key.
+        // That Component is a translation almost always, but a datapack may write plain
+        // text: such an entry gets its name and no key, because it genuinely has none.
+        collect("minecraft:enchantment", registryAccess.registryOrThrow(Registries.ENCHANTMENT),
+                enchantment -> enchantment.description().getContents()
+                        instanceof TranslatableContents translatable ? translatable.getKey() : null,
+                enchantment -> enchantment.description().getString(),
+                values, keys);
+
+        // NOTE: Biomes are data-driven too and could be named the same way as enchantments.
 
         // Write the output file. `keys` sits BESIDE `values` rather than nesting inside it,
         // so a reader written against schema 1 keeps working unchanged and a reader written
@@ -109,21 +117,36 @@ public final class LocalizationDumpService {
      */
     private static <T> void collect(
             String registryId,
-            IForgeRegistry<T> registry,
+            Registry<T> registry,
             Function<T, String> descriptionIdGetter,
             Language lang,
             JsonObject values,
             JsonObject keys
     ) {
+        collect(registryId, registry, descriptionIdGetter,
+                entry -> lang.getOrDefault(descriptionIdGetter.apply(entry)), values, keys);
+    }
+
+    /** As above, for entries whose name is not simply their key looked up; a null key is left out. */
+    private static <T> void collect(
+            String registryId,
+            Registry<T> registry,
+            Function<T, String> keyGetter,
+            Function<T, String> nameGetter,
+            JsonObject values,
+            JsonObject keys
+    ) {
         JsonObject names = new JsonObject();
         JsonObject translationKeys = new JsonObject();
-        registry.getEntries().stream()
+        registry.entrySet().stream()
                 .sorted(Comparator.comparing(e -> e.getKey().location().toString()))
                 .forEach(entry -> {
                     String id = entry.getKey().location().toString();
-                    String translationKey = descriptionIdGetter.apply(entry.getValue());
-                    names.addProperty(id, lang.getOrDefault(translationKey));
-                    translationKeys.addProperty(id, translationKey);
+                    names.addProperty(id, nameGetter.apply(entry.getValue()));
+                    String translationKey = keyGetter.apply(entry.getValue());
+                    if (translationKey != null) {
+                        translationKeys.addProperty(id, translationKey);
+                    }
                 });
         values.add(registryId, names);
         keys.add(registryId, translationKeys);

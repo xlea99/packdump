@@ -87,7 +87,7 @@ public final class DumpOrchestrator {
 
         // ── Dump localizations ──
         try {
-            LocalizationDumpService.dumpLocalizations();
+            LocalizationDumpService.dumpLocalizations(server.registryAccess());
         } catch (Exception e) {
             LOGGER.error("packdump localization dump failed", e);
             messages.add(Component.literal("[packdump] Localization dump FAILED: " + e.getMessage())

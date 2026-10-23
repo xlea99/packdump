@@ -1,5 +1,5 @@
 package net.xlea99.packdump;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.fml.loading.FMLPaths;
 import java.nio.file.Path;
 
 public final class PackdumpPaths {
